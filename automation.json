@@ -1,0 +1,20 @@
+[
+ {
+    "Name": "Main Game",
+    "UniverseID": 5966905324,
+    "Datastores": [
+        {
+            "Name": "PlayerStore",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "V1",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "TimeStats",
+            "KeyTemplate": "{uid}"
+        }
+    ]
+ }   
+]
