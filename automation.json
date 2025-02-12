@@ -14,7 +14,95 @@
         {
             "Name": "TimeStats",
             "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "BAE_#$DGF",
+            "KeyTemplate": "{uid}*"
+        },
+        {
+            "Name": "GiftsDataStore",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "PointsAwarded",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "PointsMcDonaldsnew24",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "PurchaseHistory",
+            "KeyTemplate": "player_{uid}*"
+        },
+        {
+            "Name": "RedeemedCodes",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "ScavengerHuntTokens",
+            "KeyTemplate": "{uid}_Tokens"
+        },
+        {
+            "Name": "TimeStats",
+            "KeyTemplate": "{uid}"
         }
     ]
- }   
+ },
+ {
+    "Name": "Rank Center",
+    "UniverseID": 5726240389,
+    "Datastores": [
+        {
+            "Name": "RANKING_SERVICE",
+            "KeyTemplate": "{uid}"
+        }
+    ]
+ },
+ {
+    "Name": "V2",
+    "UniverseID": 5654723226,
+    "Datastores": [
+        {
+            "Name": "Bans",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "DailyRewards",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "HDAdminPlayerDataV1.0",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "cmipoints",
+            "KeyTemplate": "cmi{uid}"
+        },
+        {
+            "Name": "cmipoints-LANG",
+            "KeyTemplate": "cmi{uid}"
+        },
+        {
+            "Name": "cmipoints-T",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "frgtjtykyutytrdhfh",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "LeaderStatSave",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "PurchaseHistoryCount",
+            "KeyTemplate": "{uid}"
+        },
+        {
+            "Name": "PurchaseHistory",
+            "KeyTemplate": "player_{uid}*"
+        }
+    ]
+ }
 ]
