@@ -29,11 +29,12 @@ DatastorePool = {}
 with open("automation.json", "r") as f:
     automateList = json.load(f)
 
-UID = int(input("Enter user ID to purge: "))
+UID = int(input("Enter user ID to purge: ").strip())
 if not UID:
     log.error("No UID entered")
     exit(1)
 
+# Lil prompt to make sure
 def confirmDestructiveAction():
     print("The above action is destructive, meaning it has irreversible consequences. Are you 100% certain? y(es)/n(o)", end=" ")
     try:
@@ -52,56 +53,60 @@ def confirmDestructiveAction():
         log.critical("Invalid choice: " + choice)
         exit(1)
 
-def clearKey(UniverseID: int, dataStoreName: str, keyName: str) -> int:
-    clearedKeys = 0
-    Experience: rbx.Experience = None
+# Returns a cached rbx.Experience object or creates a new one
+def get_experience(UniverseID: int) -> rbx.Experience:
     if UniverseID in ExperiencePool:
-        Experience = ExperiencePool[UniverseID]
-    else:
-        Experience = rbx.Experience(UniverseID, API_KEY)
-        ExperiencePool[UniverseID] = Experience
+        return ExperiencePool[UniverseID]
     
-    Datastore: rbx.datastore = None
+    Experience = rbx.Experience(UniverseID, API_KEY)
+    ExperiencePool[UniverseID] = Experience
+    return Experience
+
+# Returns a cached rbx.datastore object obtained from an experience or creates a new one
+def get_datastore(UniverseID: int, dataStoreName: str) -> rbx.datastore:
     formatForStore = f"{dataStoreName}_{UniverseID}"
     if formatForStore in DatastorePool:
-        Datastore = DatastorePool[formatForStore]
-    else:
-        Datastore = Experience.get_datastore(dataStoreName)
+        return DatastorePool[formatForStore]
+    
+    Experience = get_experience(UniverseID)
+    Datastore = Experience.get_datastore(dataStoreName)
+    
+    if Datastore:
         DatastorePool[formatForStore] = Datastore
 
+    return Datastore
+
+# Removes a key from given universe id, in a specified dataStore and the key name itself, handles wildcards smoothly
+def clearKey(UniverseID: int, dataStoreName: str, keyName: str) -> int:
+    Datastore = get_datastore(UniverseID, dataStoreName)
     if not Datastore:
         log.warning(f"Invalid clearKey call, skipping key {keyName} for datastore {dataStoreName} in Universe {UniverseID}")
-        return clearedKeys
-    
+        return 0
+
     log.info(f"Clearing key {keyName} in datastore {dataStoreName} in universe {UniverseID}")
     
     if "*" in keyName:
         prefix = keyName.split("*")[0]
         log.info(f"Wildcard detected, listing keys with prefix: {prefix}")
         keys = Datastore.list_keys(prefix)
-        
-        for key in keys:
-            log.info(f"Clearing key {key} in datastore {dataStoreName} in universe {UniverseID}")
-            try:
-                Datastore.remove_entry(key)
-                log.info(f"Clearing key {key} in datastore {dataStoreName} in universe {UniverseID}")
-                clearedKeys += 1
-            except rbx.exceptions.NotFound:
-                log.info(f"Tried deleting invalid key (this is normal): {key}")
-        
     else:
-        log.info(f"Clearing key {keyName} in datastore {dataStoreName} in universe {UniverseID}")
+        keys = [keyName]
+
+    clearedKeys = 0
+    for key in keys:
         try:
-            Datastore.remove_entry(keyName)
+            Datastore.remove_entry(key)
+            log.info(f"Cleared key {key}")
             clearedKeys += 1
         except rbx.exceptions.NotFound:
-            log.info(f"Tried deleting invalid key (this is normal): {keyName}")
+            log.info(f"Skipping key: {key}")
 
     return clearedKeys
 
 totalClears = 0
 totalDataStores = 0
 
+# Main loop
 for game in automateList:
     gameName: str = game["Name"]
     universeId: int = game["UniverseID"]
@@ -135,13 +140,15 @@ for game in automateList:
     totalClears += clearedKeys
 
 Report: str = f"""
-
-\n\n
-Clearing done, stats:
-Cleared a total of {totalClears} among {totalDataStores},
-With a total of {len(automateList)} universes.
-\n\n
-
+===============================
+      Clearing Summary
+===============================
+ Total Keys Cleared : {totalClears}
+ Total Datastores   : {totalDataStores}
+ Total Universes    : {len(automateList)}
+-------------------------------
 (The program will now exit)
-
 """
+
+print(Report)
+log.info(Report)
